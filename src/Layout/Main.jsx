@@ -1,8 +1,9 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import {Dashboard,Schedule,Predict,Login,Matches} from '../Pages/';
+import {Dashboard,Schedule,Predict,Login,Matches, Register, Result} from '../Pages/';
 import { Route } from 'react-router-dom';
+import { PrivateRoute } from '../Hoc';
 
 function Main() {
   return (
@@ -10,10 +11,12 @@ function Main() {
       <Header />
       <div className="main-wrapper">
           <Route exact path="/" component = {Login} />
-          <Route exact path="/dashboard" component = {Dashboard} />
-          <Route path="/schedule" component = {Schedule} />
-          <Route path="/predict" component = {Predict} />
-          <Route path="/match" component = {Matches} />
+          <PrivateRoute exact path="/dashboard" component = {Dashboard} />
+          <PrivateRoute path="/schedule" component = {Schedule} />
+          <PrivateRoute path="/predict" component = {Predict} />
+          <PrivateRoute path="/result" component = {Result} />
+          <PrivateRoute path="/match" component = {Matches} />
+          <Route path="/register" component = {Register} />
       </div>
       <Footer />
     </div>

@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 
-import { Button, Input } from "../../Component";
+import { Button, Input, Pageheader } from "../../Component";
 import { connect } from 'react-redux';
 
-import * as actionTypes from '../../Store/actions';
-
-import axios from '../../axios/matches';
+import { postMatch } from '../../Store/actions/index';
 
 class Matches extends Component {
   state = {
@@ -15,46 +13,82 @@ class Matches extends Component {
     const handleSubmit = (e) => {
       e.preventDefault();
       let match = {
-          team1 : e.currentTarget.team1.value,
-          team2 : e.currentTarget.team2.value,
-          date : e.currentTarget.date.value,
-          time : e.currentTarget.time.value,
-          stadium : e.currentTarget.stadium.value,
-        };
-        
-        axios.post('/matches.json',match)
-        .then(response => {
-            console.log(response);
-            this.props.onAddMatch(match);
-        })
-        .catch(error => console.log(error));
+        team1: e.currentTarget.team1.value,
+        team2: e.currentTarget.team2.value,
+        team1a: e.currentTarget.team1a.value,
+        team2a: e.currentTarget.team2a.value,
+        bonus: e.currentTarget.bonus.value,
+        bonusa: e.currentTarget.bonusa.value,
+        bonusp: e.currentTarget.bonusp.value,
+        date: e.currentTarget.date.value,
+        time: e.currentTarget.time.value,
+        stadium: e.currentTarget.stadium.value,
+        locked: false
+      };
+
+      this.props.onAddMatch(match);
     };
+
     return (
       <section>
-        <h1>Add Matches</h1>
+        <Pageheader {...{ heading: "Add match" }} />
         <form onSubmit={handleSubmit}>
-          <Input {...{ name: "team1", placeHolder: "Team 1", id: "team1" }} />
-          <Input {...{ name: "team2", placeHolder: "Team 2", id: "team2" }} />
-          <Input {...{ name: "date", placeHolder: "Date", id: "date" }} />
-          <Input {...{ name: "time", placeHolder: "Time", id: "time" }} />
-          <Input {...{ name: "stadium", placeHolder: "Stadium", id: "stadium" }} />
+          <div className="slds-grid slds-gutters">
+            <div className="slds-col">
+              <Input {...{ name: "team1", placeHolder: "Team 1", id: "team1" }} />
+            </div>
+            <div className="slds-col">
+              <Input {...{ name: "team1a", placeHolder: "Team 1 Alias", id: "team1a" }} />
+            </div>
+          </div>
+          <div className="slds-grid slds-gutters">
+            <div className="slds-col">
+              <Input {...{ name: "team2", placeHolder: "Team 2", id: "team2" }} />
+            </div>
+            <div className="slds-col">
+              <Input {...{ name: "team2a", placeHolder: "Team 2 Alias", id: "team2a" }} />
+            </div>
+          </div>
+          <div className="slds-grid slds-gutters">
+            <div className="slds-col">
+              <Input {...{ name: "bonus", placeHolder: "Bonus", id: "bonus" }} />
+            </div>
+            <div className="slds-col">
+              <Input {...{ name: "bonusa", placeHolder: "Bonus Alias", id: "bonusa" }} />
+            </div>
+            <div className="slds-col">
+              <Input {...{ name: "bonusp", placeHolder: "Bonus Points", id: "bonusp" }} />
+            </div>
+          </div>
+          <div className="slds-grid slds-gutters">
+            <div className="slds-col">
+              <Input {...{ name: "date", placeHolder: "Date", id: "date" }} />
+            </div>
+            <div className="slds-col">
+              <Input {...{ name: "time", placeHolder: "Time", id: "time" }} />
+            </div>
+          </div>
+          <div className="slds-grid slds-gutters">
+            <div className="slds-col">
+              <Input {...{ name: "stadium", placeHolder: "Stadium", id: "stadium" }} />
+            </div>
+          </div>
           <Button {...{ text: "Add Match" }} />
         </form>
-        <p>{this.props.matches.team1},{this.props.matches.team2},{this.props.matches.time},{this.props.matches.date}{this.props.matches.stadium}</p>
       </section>
     );
   }
 }
 
 function mapStateToProps(state) {
-    console.log(state)
   return {
     matches: state.match,
+    loading: state.loading
   };
 }
 function mapDispatchToProps(dispatch) {
   return {
-    onAddMatch: (match) => dispatch({type: actionTypes.ADD_MATCH, value: match})
+    onAddMatch: (match) => dispatch(postMatch(match))
   };
 }
 

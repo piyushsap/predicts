@@ -1,35 +1,37 @@
 import React, { Component } from 'react';
 import Schedulecard from './Schedulecard';
 import { connect } from 'react-redux';
-import axios from '../../axios/matches';
-import * as actionTypes from '../../Store/actions';
-import { Spinner } from "../../Component";
-
+import { getMatchID, fetchSchedule, onlock } from '../../Store/actions/index';
+import { Spinner, Pageheader } from "../../Component";
+import {Redirect} from 'react-router-dom';
 class Schedule extends Component {
-
-    state = {
-        isLoading: true,
-    };
     componentWillMount(){
-        axios.get('/matches.json')
-        .then(response => {
-            console.log(response);
-            this.props.onGetSchedule(response.data);
-            this.setState({isLoading:false})
-        })
-        .catch(error => {
-            console.log(error)
-            this.setState({isLoading:false})
-        });
-    }
+        this.props.onFetchSchedule();
+    };
     render() {
+        const predict = (e) => {
+            e.preventDefault();
+            let matchdata = this.props.schedule.filter( match =>{
+                return match.id === e.target.id;
+            })
+            this.props.onPredictInit(matchdata);
+        }
+        const lock = (e) => {
+            e.preventDefault();
+            let matchdata = this.props.schedule.filter( match =>{
+                return match.id === e.target.id;
+            })
+            matchdata[0].locked = true
+            this.props.onlock(matchdata[0]);
+        }
         return (
             <section>
-                <h1>Match Schedule</h1>
-                {!this.state.isLoading ?(
+                { this.props.matchID && !this.props.result ?( <Redirect to='/predict' /> ) : null }
+                { this.props.matchID && this.props.matchID[0].locked ?( <Redirect to='/result' /> ) : null }
+                <Pageheader {...{ heading: "Match Schedule" }} />              
+                {!this.props.loading ?(
                     this.props.schedule.map((match,index) => {
-                        console.log(match)
-                        return <Schedulecard match={match} key={index} />
+                        return <Schedulecard match={match} lock={lock} predict={predict} key={index} matchno={index + 1} />
                     })
                 ):(
                     <Spinner /> 
@@ -41,14 +43,18 @@ class Schedule extends Component {
 
 
 function mapStateToProps(state) {
-    console.log(state.schedule)
   return {
     schedule: state.schedule,
+    loading: state.loading,
+    matchID: state.matchID,
+    result: state.result
   };
 }
 function mapDispatchToProps(dispatch) {
   return {
-    onGetSchedule: (schedule) => dispatch({type: actionTypes.GET_SCHEDULE, value: schedule})
+    onFetchSchedule: () => dispatch(fetchSchedule()),
+    onPredictInit: (id) => dispatch(getMatchID(id)),
+    onlock: (match) => dispatch(onlock(match))
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Schedule);
