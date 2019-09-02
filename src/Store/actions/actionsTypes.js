@@ -16,3 +16,9 @@ export const GET_PREDICTIONS = 'GET_PREDICTIONS';
 export const ADD_RESULT = 'ADD_RESULT';
 export const ADD_POINTS = 'ADD_POINTS';
 
+
+
+export const CLOSE_ALERTS = 'CLOSE_ALERTS';
+
+export const GET_USERPOINTS = 'GET_USERPOINTS';
+export const GET_MATCH_DETAIL = 'GET_MATCH_DETAIL';

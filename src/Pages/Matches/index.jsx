@@ -1,17 +1,26 @@
 import React, { Component } from 'react';
 
-import { Button, Input, Pageheader } from "../../Component";
+import { Button, Input, Pageheader, Alert } from "../../Component";
 import { connect } from 'react-redux';
 
-import { postMatch } from '../../Store/actions/index';
+import { postMatch, closeAlerts } from '../../Store/actions/index';
+import DateTimePicker from 'react-datetime-picker';
 
 class Matches extends Component {
   state = {
     isLoading: false,
+    date: new Date()
+  };
+  componentWillUnmount(){
+    this.props.onCloseAlert()
   };
   render() {
+    const dateChanged =(d)=>{
+      this.setState({date: d});
+    }
     const handleSubmit = (e) => {
       e.preventDefault();
+      let dateTime = this.state.date;
       let match = {
         team1: e.currentTarget.team1.value,
         team2: e.currentTarget.team2.value,
@@ -20,19 +29,26 @@ class Matches extends Component {
         bonus: e.currentTarget.bonus.value,
         bonusa: e.currentTarget.bonusa.value,
         bonusp: e.currentTarget.bonusp.value,
-        date: e.currentTarget.date.value,
-        time: e.currentTarget.time.value,
+        date: dateTime.toDateString(),
+        time: dateTime.toLocaleTimeString().replace(/(.*)\D\d+/, '$1'),
         stadium: e.currentTarget.stadium.value,
         locked: false
       };
 
       this.props.onAddMatch(match);
     };
+    if(this.props.showNotification){ 
+      document.getElementById("create-match").reset();
+    }
+    
 
     return (
       <section>
+        {this.props.showNotification ? (
+          <Alert {...{ text: "Logged in successfully", class: "slds-theme_success" }} />
+        ):null}
         <Pageheader {...{ heading: "Add match" }} />
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} id="create-match">
           <div className="slds-grid slds-gutters">
             <div className="slds-col">
               <Input {...{ name: "team1", placeHolder: "Team 1", id: "team1" }} />
@@ -62,10 +78,12 @@ class Matches extends Component {
           </div>
           <div className="slds-grid slds-gutters">
             <div className="slds-col">
-              <Input {...{ name: "date", placeHolder: "Date", id: "date" }} />
-            </div>
-            <div className="slds-col">
-              <Input {...{ name: "time", placeHolder: "Time", id: "time" }} />
+              <DateTimePicker
+                onChange={dateChanged} 
+                value={this.state.date}
+                format ="dd MMM y h:mm a"
+                className = "datepicker"
+              />
             </div>
           </div>
           <div className="slds-grid slds-gutters">
@@ -83,12 +101,15 @@ class Matches extends Component {
 function mapStateToProps(state) {
   return {
     matches: state.match,
-    loading: state.loading
+    loading: state.loading,
+    redirect: state.redirect,
+    showNotification:state.showNotification
   };
 }
 function mapDispatchToProps(dispatch) {
   return {
-    onAddMatch: (match) => dispatch(postMatch(match))
+    onAddMatch: (match) => dispatch(postMatch(match)),
+    onCloseAlert: () => dispatch(closeAlerts())
   };
 }
 

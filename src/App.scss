@@ -37,7 +37,7 @@ h1 {
   text-align: center;
 }
 form {
-  input, .slds-select_container {
+  .slds-form-element, .slds-select_container {
     margin-bottom: 15px;
   }
 }
@@ -49,7 +49,19 @@ form {
   margin-bottom: 40px;
   text-transform: uppercase;
 }
-
+.logo{
+  max-height: 25px;
+}
+.datepicker{
+  margin-bottom: 15px;
+  .react-datetime-picker__wrapper{
+    background-color: #fff;
+    border: 1px solid #dddbda;
+    min-height: calc(1.875rem + (1px * 2));
+    padding: 0 1rem 0 .75rem;
+    border-radius: .25rem;
+  }
+}
 .main-wrapper {
   height: calc(100vh - 100px);
   overflow: auto;
@@ -182,5 +194,47 @@ h2{
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+.slds-context-bar__item .is-active {
+  animation: bkAnim 135ms cubic-bezier(.39,.575,.565,1) both;
+}
+.slds-context-bar__item .is-active, .slds-context-bar__item:not(.slds-no-hover):hover {
+  outline: 0;
+  border-radius: 0;
+  background-color: rgba(21,137,238,.1);
+  text-decoration: none;
+  cursor: pointer;
+}
+.matches{
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  justify-content: space-between;
+  .slds-card{
+    flex: 0 1 100%;
+    @media (min-width:768px) {
+      flex: 0 1 49%;
+    }
+    @media (min-width:992px) {
+      flex: 0 1 32%;
+    }
+    margin:0 0 .75rem;
+  }
+  .slds-card__footer{
+    padding: 0;
+    text-align: left;
+    button{
+      margin: .75rem .5rem;
+    }
+  }
+  .matchno{
+    background-color: rgba(0, 0, 0, .1);
+    color: #333;
+    margin: 10px 0;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    padding: .75rem 1rem;
   }
 }

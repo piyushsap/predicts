@@ -3,35 +3,36 @@ import React, { Component } from 'react';
 import { Button, Input, Select, Pageheader } from "../../Component";
 import { connect } from 'react-redux';
 
-import { postResult, postPoints } from '../../Store/actions/index';
+import { postResult, postPoints, fetchUserPoints } from '../../Store/actions/index';
 import { Redirect } from 'react-router-dom';
 
 class Result extends Component {
+  componentWillMount() {
+    this.props.onGetPoints();
+  };
   render() {
 
     if (this.props.matchID) { }
     const options = [
       { name: this.props.matchID.team1, alias: this.props.matchID.team1a },
-      { name: this.props.matchID.team2, alias: this.props.matchID.team2a }
+      { name: this.props.matchID.team2, alias: this.props.matchID.team2a },
+      { name: 'Match Dismissed', alias: 'matchdismiss' }
     ];
 
     const getPrediction = (matchId, userID) => {
-      console.log(matchId, userID)
       if (this.props.predictions != null) {
         let predict = this.props.predictions.filter(prediction => {
           return prediction.matchID === matchId && prediction.userID === userID
         });
-        console.log(predict);
         let prediction = predict.length ? predict[0].prediction : null;
         return prediction
       }
     };
-    const bonusPoints = (userID, bonusWinner,match) => {
-      let points=0,
-          bonusWin = bonusWinner.filter(bonusW => {
-            return userID === bonusW
-          });
-      console.log(bonusWin);
+    const bonusPoints = (userID, bonusWinner, match) => {
+      let points = 0,
+        bonusWin = bonusWinner.filter(bonusW => {
+          return userID === bonusW
+        });
       if (bonusWin[0] === userID)
         points = match.bonusp;
       else
@@ -53,32 +54,33 @@ class Result extends Component {
         winner: e.currentTarget.winner.value,
         result: e.currentTarget.result.value,
       };
-      
-      result.bonusWinner= winners;
 
-      let userpoints = this.props.users.map(user => {     
-        let prediction = getPrediction(this.props.matchID.id, user.userID),
-          points = user.points,
-          bonusPoint = bonusPoints(user.userID,result.bonusWinner,this.props.matchID);
+      result.bonusWinner = winners;
+      let userpoints = {};
+      this.props.userPoints.forEach(user => {
+        let prediction = getPrediction(this.props.matchID.id, user.id),
+            points = user.points,
+            bonusPoint = 0;
+        if(e.currentTarget.bonusWinner)
+          bonusPoint = bonusPoints(user.id, result.bonusWinner, this.props.matchID);
 
-        if (prediction === result.winner) {
+        if (result.winner === 'matchdismiss') {
           points = (Number(points) + Number(bonusPoint)) + 1;
         } else {
-          points = (Number(points) + Number(bonusPoint)) - 1 ;
-        }
-        var cyz = {
-          [user.userID] : {
-            points
+          if (prediction === result.winner) {
+            points = (Number(points) + Number(bonusPoint)) + 1;
+          } else {
+            if (prediction === '') {
+              points = (Number(points));
+            } else {
+              points = (Number(points) + Number(bonusPoint)) - 1;
+            }
           }
         }
-        return cyz
+        userpoints[user.id] = {
+          points
+        };
       });
-      let pointer =[];
-      for (let i = 0; i < userpoints.length; i++) {
-        pointer.push(userpoints[i]);
-      };
-
-      console.log(pointer);
       this.props.onAddResult(result, this.props.matchID.id);
       this.props.onAddPoints(userpoints)
     };
@@ -130,7 +132,6 @@ class Result extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log(state)
   return {
     predictions: state.predictions,
     prediction: state.prediction,
@@ -138,12 +139,14 @@ function mapStateToProps(state) {
     redirect: state.redirect,
     matchID: state.matchID[0],
     users: state.users,
+    userPoints: state.userpoints
   };
 }
 function mapDispatchToProps(dispatch) {
   return {
     onAddResult: (result, matchId) => dispatch(postResult(result, matchId)),
-    onAddPoints: (points) => dispatch(postPoints(points))
+    onAddPoints: (points) => dispatch(postPoints(points)),
+    onGetPoints: () => dispatch(fetchUserPoints())
   };
 }
 

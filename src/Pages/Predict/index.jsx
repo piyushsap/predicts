@@ -3,16 +3,19 @@ import React, { Component } from 'react';
 import { Button, Input, Select, Pageheader } from "../../Component";
 import { connect } from 'react-redux';
 
-import { postPrediction, fetchPrediction } from '../../Store/actions/index';
+import { postPrediction, fetchPrediction, getMatch } from '../../Store/actions/index';
 import {Redirect} from 'react-router-dom';
 
 class Predict extends Component {
   componentWillMount(){
+      console.log(this.props.match.params.id)
       this.props.onFetchPredictions();
+      this.props.onGetMatch(this.props.match.params.id);
   };
   render() {
+    console.log(this.props.match,22)
     if(this.props.redirect) 
-      return <Redirect to='/schedule' />
+      return <Redirect to='/dashboard' />
     
       const getPrediction = (matchId,userID) => {
       if(this.props.predictions!=null){
@@ -31,7 +34,6 @@ class Predict extends Component {
     const handleSubmit = (e) => {
       e.preventDefault();
       let checkprediction = getPrediction(this.props.matchID.id,this.props.userID)
-      console.log(checkprediction);
       let prediction = {
           userID : this.props.userID,
           matchID : this.props.matchID.id, 
@@ -57,7 +59,6 @@ class Predict extends Component {
               <Input {...{ name: "bonus", placeHolder: "bonus", id: "bonus" }} />
               ):null}
               <Button {...{ text: "Predict" }} />
-              <p>{this.props.prediction.prediction},{this.props.prediction.bonus}</p>
             </form>
           </div>
         ): null}
@@ -67,18 +68,20 @@ class Predict extends Component {
 }
 
 function mapStateToProps(state) { 
+  console.log(state.matchID);
   return {
     predictions: state.predictions,
     prediction: state.prediction,
     userID: state.user.userID,
     redirect: state.redirect,
-    matchID: state.matchID[0],
+    matchID: state.matchID,
   };
 }
 function mapDispatchToProps(dispatch) {
   return {
     onAddPrediction: (prediction,predicted) => dispatch(postPrediction(prediction,predicted)),
-    onFetchPredictions: () => dispatch(fetchPrediction())
+    onFetchPredictions: () => dispatch(fetchPrediction()),
+    onGetMatch:(match) => dispatch(getMatch(match))
   };
 }
 

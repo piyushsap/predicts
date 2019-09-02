@@ -7,6 +7,28 @@ export const addPrediction = (prediction) => {
         prediction : prediction
     };
 }
+export const getmatchDetail = (match) => {
+    return{
+        type: actionType.GET_MATCH_DETAIL,
+        match : match
+    };
+}
+
+
+export const getMatch = (id) =>{
+    return dispatch =>{
+        axios.get('/matches/'+id+'.json')
+        .then(response => {
+            let match = response.data
+            match.id = id;
+            console.log(match)
+            dispatch(getmatchDetail(match));
+        })
+        .catch(error => {
+            console.log(error)
+        });
+    }
+}
 
 export const postPrediction = (prediction,predicted) =>{
     return dispatch =>{

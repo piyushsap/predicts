@@ -1,78 +1,61 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../Store/actions/index';
 import { Redirect } from 'react-router-dom';
+import Auth from "../Hoc/Auth";
+import logo from "../Assets/images/logo.jpg"
 
 function Header(props) {
   const logout = (e) => {
     e.preventDefault();
-    console.log(e);
     props.onLogout();
   }
-  console.log(props.location);
   return (
     <div className="slds-context-bar">
       {!props.user.token ? (<Redirect to='/' />) : null}
       <div className="slds-context-bar__primary">
         <div className="slds-context-bar__item slds-context-bar__dropdown-trigger slds-dropdown-trigger slds-dropdown-trigger_click slds-no-hover">
           <div className="slds-context-bar__icon-action">
-            <button className="slds-button slds-icon-waffle_container slds-context-bar__button" title="Description of the icon when needed">
-              <span className="slds-icon-waffle">
-                <span className="slds-r1"></span>
-                <span className="slds-r2"></span>
-                <span className="slds-r3"></span>
-                <span className="slds-r4"></span>
-                <span className="slds-r5"></span>
-                <span className="slds-r6"></span>
-                <span className="slds-r7"></span>
-                <span className="slds-r8"></span>
-                <span className="slds-r9"></span>
-              </span>
-              <span className="slds-assistive-text">Open App Launcher</span>
-            </button>
+            <img src={logo} alt="logo" className="logo" />
           </div>
-          <span className="slds-context-bar__label-action slds-context-bar__app-name">
-            <span className="slds-truncate" title="Predict">Predict</span>
-          </span>
         </div>
       </div>
       <nav className="slds-context-bar__secondary slds-grid_reverse" role="navigation">
         <ul className="slds-grid">
           {props.user.token ? (
-            <li className="slds-context-bar__item slds-is-active">
-              <Link to="/" className="slds-context-bar__label-action" title="Dashboard">
-                <span className="slds-assistive-text">Current Page:</span>
+            <li className="slds-context-bar__item">
+              <NavLink to="/dashboard" activeClassName='is-active' className="slds-context-bar__label-action" title="Dashboard">
                 <span className="slds-truncate" title="Dashboard">Dashboard</span>
-              </Link>
+              </NavLink>
             </li>
           ) : null}
           {props.user.token ? (
             <li className="slds-context-bar__item">
-              <Link to="/schedule" className="slds-context-bar__label-action" title="Schedule">
+              <NavLink activeClassName='is-active' to="/schedule" className="slds-context-bar__label-action" title="Schedule">
                 <span className="slds-truncate" title="Schedule">Schedule</span>
-              </Link>
+              </NavLink>
             </li>
           ) : null}
-          {props.user.token ? (
+          {props.user.token && !Auth.adminAuth ? (
             <li className="slds-context-bar__item">
-              <Link to="/match" className="slds-context-bar__label-action" title="Matches">
+              <NavLink activeClassName='is-active' to="/match" className="slds-context-bar__label-action" title="Matches">
                 <span className="slds-truncate" title="Matches">Matches</span>
-              </Link>
+              </NavLink>
             </li>
           ) : null}
           {!props.user.token ? (
             <li className="slds-context-bar__item">
-              <Link to="/" className="slds-context-bar__label-action" title="Login">
+              <NavLink activeClassName='is-active' to="/" className="slds-context-bar__label-action" title="Login">
                 <span className="slds-truncate" title="Login">Login</span>
-              </Link>
+              </NavLink>
             </li>
           ) : null}
           {!props.user.token ? (
             <li className="slds-context-bar__item">
-              <Link to="/register" className="slds-context-bar__label-action" title="Register">
+              <NavLink activeClassName='is-active' to="/register" className="slds-context-bar__label-action" title="Register">
                 <span className="slds-truncate" title="Register">Register</span>
-              </Link>
+              </NavLink>
             </li>
           ) : (
               <li className="slds-context-bar__item">

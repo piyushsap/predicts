@@ -35,11 +35,9 @@ export const getMatchID = (matchID) => {
 }
 
 export const onlock = (match) =>{
-    console.log(match.id,match);
     return dispatch =>{
         axios.put('/matches/'+match.id+'.json',match)
         .then(response => {
-            console.log(response)
             dispatch(fetchSchedule());
         })
         .catch(error => {

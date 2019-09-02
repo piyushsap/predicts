@@ -2,14 +2,18 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import { Spinner, Pageheader, Alert } from "../../Component";
-import { fetchSchedule, fetchUsers, fetchPrediction } from '../../Store/actions/index';
+import { fetchSchedule, fetchUsers, fetchPrediction, closeAlerts, fetchUserPoints } from '../../Store/actions/index';
 
 class Dashboard extends Component {
   componentWillMount() {
+    this.props.onFetchPoints();
     this.props.onFetchSchedule();
     this.props.onFetchUsers();
     this.props.onFetchPredictions();
   };
+  componentWillUnmount(){
+    this.props.onCloseAlert()
+  }
   state = {
     isloading: true
   }
@@ -28,10 +32,21 @@ class Dashboard extends Component {
         return predictio
       }
     };
+    const getPoints = (userID) => {
+      if (this.props.userPoints != null) {
+        let userP = this.props.userPoints.filter(user => {
+            return user.id === userID
+          });
+
+        return userP[0].points
+      }
+    };
     return (
       <section className="dashboard">
-        
-        <Alert/>
+
+        {this.props.showNotification ? (
+          <Alert {...{ text: "Logged in successfully", class: "slds-theme_success" }} />
+        ):null}
         <Pageheader {...{ heading: "Dashboard" }} />
         <div className="table-overflow">
           {!this.props.loading && this.props.matches != null && this.props.users != null ? (
@@ -72,7 +87,7 @@ class Dashboard extends Component {
                         </div>
                       </th>
                       <td data-label="Points">
-                        <div className="slds-truncate" title=""></div>
+                        <div className="slds-truncate" title="">{getPoints(user.userID)}</div>
                       </td>
                       {
                         this.props.matches.map((match, index) => {
@@ -109,14 +124,18 @@ function mapStateToProps(state) {
     matches: state.schedule,
     users: state.users,
     predictions: state.predictions,
-    loading: state.loading
+    loading: state.loading,
+    showNotification: state.showNotification,
+    userPoints: state.userpoints
   };
 }
 function mapDispatchToProps(dispatch) {
   return {
+    onFetchPoints: () => dispatch(fetchUserPoints()),
     onFetchSchedule: () => dispatch(fetchSchedule()),
     onFetchUsers: () => dispatch(fetchUsers()),
-    onFetchPredictions: () => dispatch(fetchPrediction())
+    onFetchPredictions: () => dispatch(fetchPrediction()),
+    onCloseAlert: () => dispatch(closeAlerts()),
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

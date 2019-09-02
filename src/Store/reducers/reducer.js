@@ -21,13 +21,15 @@ const initialstate={
         userID: localStorage.getItem('userID'),
         expires : localStorage.getItem('expires'),
     },
+    userpoints:[],
     matchID:'',
     loading:true,
     schedule: null,
     users: null,
     predictions: null,
     redirect:true,
-    result:false
+    result:false,
+    showNotification:false
 }
 
 const reducer = (state = initialstate,action) =>{
@@ -50,6 +52,8 @@ const reducer = (state = initialstate,action) =>{
                 ...state,
                 match : action.match,
                 loading: false,
+                redirect: true,
+                showNotification:true
             };
         case actionTypes.GET_SCHEDULE:
             return {
@@ -61,6 +65,7 @@ const reducer = (state = initialstate,action) =>{
             return {
                 ...state,
                 user : action.authData,
+                showNotification: true
             };
         case actionTypes.AUTH_FAIL:
             return {
@@ -71,6 +76,7 @@ const reducer = (state = initialstate,action) =>{
             return {
                 ...state,
                 users : action.users,
+                redirect:false,
             };
         case actionTypes.GET_PREDICTIONS:
             return {
@@ -88,7 +94,24 @@ const reducer = (state = initialstate,action) =>{
             return {
                 ...state,
                 result : action.result,
-                redirect:true
+                redirect:true,
+                matchID: ''
+            };
+        case actionTypes.CLOSE_ALERTS:
+            return {
+                ...state,
+                showNotification : action.closeAlerts,
+            };
+        case actionTypes.GET_USERPOINTS:
+            return {
+                ...state,
+                userpoints : action.userpoints,
+            };
+        case actionTypes.GET_MATCH_DETAIL:
+            return {
+                ...state,
+                matchID: action.match,
+                redirect:false
             };
         default:
             return state;

@@ -11,9 +11,9 @@ function Main() {
       <Header />
       <div className="main-wrapper">
           <Route exact path="/" component = {Login} />
-          <PrivateRoute exact path="/dashboard" component = {Dashboard} />
+          <PrivateRoute path="/dashboard" component = {Dashboard} />
           <PrivateRoute path="/schedule" component = {Schedule} />
-          <PrivateRoute path="/predict" component = {Predict} />
+          <PrivateRoute path="/predict/:id" component = {Predict} />
           <PrivateRoute path="/result" component = {Result} />
           <PrivateRoute path="/match" component = {Matches} />
           <Route path="/register" component = {Register} />
